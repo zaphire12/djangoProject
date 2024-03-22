@@ -1,0 +1,88 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block body %}
+<form method="post">
+    <div class="flex items-center justify-center w-full mt-5" >
+        <div
+          class="w-[45%] block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-600">
+            <form method="post">
+              <div
+                class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+                <p
+                  class="mx-4 mb-0 text-center font-semibold dark:text-white">
+                  {{ title }}
+                </p>
+              </div>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div
+                      class="mb-5 inline-flex w-full items-center rounded-lg bg-danger-100 px-6 py-5 text-base text-danger-700"
+                      role="alert">
+                      <span class="mr-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          class="h-5 w-5">
+                          <path
+                            fill-rule="evenodd"
+                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
+                            clip-rule="evenodd"></path>
+                        </svg>
+                      </span>
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                {% for f in form %}
+                    {% if f.name == 'available_lpu' or f.name == 'groups' or f.name == 'user_permissions'%}
+                        {{ f }}
+                        <label data-te-select-label-ref>{{f.label}}</label>
+                        <p class="text-neutral-400">{{ f.errors }}</p>
+                    {% elif f.name == 'is_verified' %}
+                            {{ f }}
+                          <label
+                            class="inline-block pl-[0.15rem] hover:cursor-pointer mr-5"
+                            for="checkboxDefault">
+                            Cтатус верификации
+                          </label>
+                            <p class="text-neutral-400 mt-5">{{ f.errors }}</p>
+                    {% elif f.name == 'is_active' %}
+                        {{ f }}
+                          <label
+                            class="inline-block pl-[0.15rem] hover:cursor-pointer mb-5"
+                            for="checkboxDefault">
+                            Активный
+                          </label>
+                         <p class="text-neutral-400 mt-2">{{ f.errors }}</p>
+                    {% else %}
+                  <p class="text-neutral-400">{{ f.errors }}</p>
+                  <div class="relative mb-6" data-te-input-wrapper-init>
+                      {{ f }}
+                    <label
+                      for="{{ f.id_for_label }}"
+                      class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[1.15rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[1.15rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                      >{{f.label}}
+                    </label>
+                  </div>
+                    {% endif %}
+                {% endfor %}
+              <div class="text-center lg:text-left">
+                <button
+                  type="submit"
+                  class="inline-block rounded mt-6 bg-primary px-7 pb-2.5 pt-3 text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+                  data-te-ripple-init
+                  data-te-ripple-color="light">
+                  {{ button_label }}
+                </button>
+                <p class="mb-0 mt-5 pt-1 text-sm font-semibold">
+                  <a
+                      href="{% url 'app:verification'%}"
+                      class="underline text-primary"
+                      >Перейти на страницу верификации</a>
+                </p>
+              </div>
+            </form>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'app/base.html' %} {% load static %} {% block body %}
+<div class="mt-4 mb-1 m-12 w-[20%]">
+	<div class="relative mb-4 flex w-full flex-wrap items-stretch">
+		<input
+			id="filter-text-box1"
+			type="search"
+			class="relative m-0 block min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+			placeholder="Быстрый поиск"
+			aria-label="Search"
+			oninput="onFilterTextBoxChanged()"
+			aria-describedby="button-addon2"
+		/>
+		<!--Search icon-->
+		<span class="input-group-text flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-neutral-700 dark:text-neutral-200" id="basic-addon2">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+				<path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"></path>
+			</svg>
+		</span>
+	</div>
+</div>
+<div id="full-screen-example">
+</div>
+{% include 'widgets/search_bar.html' %}
+<div id="myGrid" class="ag-theme-alpine-dark mt-1 m-12" style="height: 65vh"></div>
+{% endblock %} {% block script %}
+<script src="{% static 'ag-grid-community/dist/ag-grid-community.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'ag-grid-enterprise/dist/ag-grid-enterprise.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/formulas.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/main.js' %}" type="text/javascript"></script>
+<script>
+    const pathname = window.location.pathname.replaceAll('/', "");
+    const first_date_l = document.getElementById('first_date')
+    const second_date_l = document.getElementById('second_date')
+    if (localStorage.getItem(pathname + '.' + first_date_l.id) && localStorage.getItem(pathname + '.' + second_date_l.id)) {
+        first_date_l.value = localStorage.getItem(pathname + '.' + first_date_l.id)
+        second_date_l.value = localStorage.getItem(pathname + '.' + second_date_l.id)
+    }
+</script>
+<script>
+    let gridApi;
+    function onBtExport() {
+      gridApi.exportDataAsExcel();
+    }
+	function onFilterTextBoxChanged() {
+	    gridApi.setGridOption(
+	        'quickFilterText',
+	        document.getElementById('filter-text-box1').value
+	    );
+	};
+	async function get_grid () {
+        const first_date = document.getElementById('first_date').value
+        const second_date = document.getElementById('second_date').value
+        const selectorValue =  (d)  => {
+            var elm = document.getElementById(d);
+            var values = [];
+            if (elm.multiple) {
+              for (var i = 0; i < elm.options.length; i ++) {
+                if (elm.options[i].selected)
+                   values.push(elm.options[i].value);
+              }
+            } else
+              values.push(elm.value);
+            return values
+        }
+        localStorage.setItem(pathname + "." + first_date_l.id, first_date.toString())
+        localStorage.setItem(pathname + "." + second_date_l.id, second_date.toString())
+	    const myGridElement = document.querySelector('#myGrid');
+        myGridElement.innerHTML = ``
+        const data = {
+                first_date: first_date,
+                second_date: second_date,
+                lpu: selectorValue('lpu'),
+                dep: selectorValue('dep'),
+                emp: selectorValue('emp'),
+                doc_type: selectorValue('doc_type')
+            };
+	    await prepare_fetch('{% url 'api:main_report' %}', '', data)
+	        .then((e) => {
+	            const gridOptions = {
+                    suppressAggFuncInHeader: true,
+                    groupDefaultExpanded: 1,
+                    autoGroupColumnDef: {
+                        headerName: 'Медицинская организация ── Подразделение ── Врач (должность)',
+                        minWidth: 600,
+                        tooltipValueGetter: (params) => params.value,
+
+                    },
+	                defaultColDef: {
+	                    flex: 1,
+	                    autoHeaderHeight: true,
+                        wrapHeaderText: true,
+                        resizable: false,
+	                },
+	                rowData: e.data,
+	                columnDefs: [
+	                    {
+	                        field: 'lpu__fullname',
+	                        headerName: 'ЛПУ',
+                            suppressMovable: true,
+                            hide: true,
+                            rowGroup: true,
+                            enableRowGroup: true,
+                            tooltipValueGetter: (params) => params.value,
+	                    },
+                        {
+	                        field: 'lpu_dep',
+	                        headerName: 'Подразделение',
+                            suppressMovable: true,
+                            hide: true,
+                            rowGroup: true,
+                            enableRowGroup: true,
+	                    },
+                        {
+	                        field: 'emp',
+	                        headerName: 'Врач',
+                            suppressMovable: true,
+                            hide: true,
+                            rowGroup: true,
+                            enableRowGroup: true,
+	                    },
+                        {
+	                        field: 'doc_type',
+	                        headerName: 'Тип документа',
+                            filter: true,
+                            suppressMovable: true,
+                            suppressHeaderMenuButton: true,
+                            floatingFilter: true,
+                            tooltipValueGetter: (params) => params.value,
+                            minWidth: 400,
+                            aggFunc: 'sum'
+	                    },
+                        {field: "services_success", 'headerName': 'Всего оказано услуг',
+                         suppressMovable: true,
+                         suppressHeaderMenuButton: true,
+                         aggFunc: 'sum',
+                         width: 100,
+                        },
+                        {field: "semd_formed", 'headerName': 'Всего сформировано СЭМД',
+                         suppressMovable: true,
+                         suppressHeaderMenuButton: true,
+                         aggFunc: 'sum',
+                         width: 100,
+                        },
+                        {field: "semd_reg", 'headerName': 'Всего зарегистрировано СЭМД',
+                         suppressMovable: true,
+                         suppressHeaderMenuButton: true,
+                         aggFunc: 'sum',
+                         width: 100,
+                        },
+                        {
+                          headerName: 'Процент сформированных СЭМД',
+                          headerTooltip: 'Процент сформированных документов за выбранный период',
+                          colId: 'goldSilverRatio',
+                          aggFunc: ratioAggFunc,
+                          valueGetter: ratioValueGetter,
+                          valueFormatter: ratioFormatter,
+                          width: 100,
+                        },
+	                ]
+	            }
+	            gridApi = agGrid.createGrid(myGridElement, gridOptions);
+	        })
+	}
+</script>
+<script>
+const loaderFull = `
+  <div id="loading-full">
+    <div
+      data-te-loading-icon-ref
+      class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
+      role="status"></div>
+    <span data-te-loading-text-ref>Loading...</span>
+  </div>
+  `;
+const btnfull = document.getElementById("btn-full-screen");
+btnfull.addEventListener("click", async () => {
+    const test2 = document.getElementById("full-screen-example");
+    test2.insertAdjacentHTML("beforeend", loaderFull);
+    const loadingFull = document.getElementById("loading-full");
+    const loading = new te.LoadingManagement(loadingFull, {
+        scroll: false,
+        backdropID: "full-backdrop",
+    });
+    const first_date = document.getElementById('first_date').value
+    const second_date = document.getElementById('second_date').value
+    if (!first_date || !second_date) {
+        loading.dispose();
+        return null
+    }
+    await get_grid()
+    loading.dispose();
+    document.body.classList.remove("overflow-hidden");
+});
+</script>
+<script>
+
+</script>
+{% endblock %}

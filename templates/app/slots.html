@@ -1,0 +1,227 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block body %}
+<div class="flex justify-start" style="align-items: baseline">
+    <div class="mt-4 mb-1 m-12 w-[20%]">
+	<div class="relative mb-4 flex w-full flex-wrap items-stretch">
+		<input
+			id="filter-text-box1"
+			type="search"
+			class="relative m-0 block min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+			placeholder="Быстрый поиск"
+			aria-label="Search"
+			oninput="onFilterTextBoxChanged()"
+			aria-describedby="button-addon2"
+		/>
+		<!--Search icon-->
+		<span class="input-group-text flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-neutral-700 dark:text-neutral-200" id="basic-addon2">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+				<path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"></path>
+			</svg>
+		</span>
+	</div>
+</div>
+<div class="inline-flex" role="group">
+  <button
+    type="button"
+    onclick="expandAll()"
+    class="inline-block rounded-l border-2 border-primary px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary transition duration-150 ease-in-out hover:border-primary-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-primary-600 focus:border-primary-600 focus:text-primary-600 focus:outline-none focus:ring-0 active:border-primary-700 active:text-primary-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+    data-te-ripple-init
+    data-te-ripple-color="light">
+    Развернуть все
+  </button>
+  <button
+    type="button"
+    onclick="collapseAll()"
+    class="-ml-0.5 inline-block border-2 border-primary px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary transition duration-150 ease-in-out hover:border-primary-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-primary-600 focus:border-primary-600 focus:text-primary-600 focus:outline-none focus:ring-0 active:border-primary-700 active:text-primary-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+    data-te-ripple-init
+    data-te-ripple-color="light">
+    Свернуть все
+  </button>
+</div>
+<form data-te-validation-init>
+    <div class="flex mb-1 mt-1 m-12 gap-2" style="align-items: baseline">
+		<div class="relative w-[10%]" data-te-datepicker-init data-te-start-day="1" data-te-inline="true" data-te-validate="input" data-te-validation-ruleset="isRequired|isDate" data-te-valid-feedback=" " data-te-input-wrapper-init>
+			<input
+				id="first_date"
+				type="text"
+				class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+				placeholder="Select a date"
+				value="{{ first_date }}"
+			/>
+			<label
+				for="floatingInput"
+				class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+			>
+				Дата начала
+			</label>
+		</div>
+		<div class="relative w-[10%]" data-te-datepicker-init data-te-start-day="1" data-te-inline="true" data-te-validate="input" data-te-validation-ruleset="isRequired|isDate" data-te-valid-feedback=" " data-te-input-wrapper-init>
+			<input
+				type="text"
+				id="second_date"
+				class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+				placeholder="Select a date"
+				value="{{ second_date }}"
+			/>
+			<label
+				for="floatingInput"
+				class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+			>
+				Дата окончания
+			</label>
+		</div>
+        <button
+			id="btn-full-screen"
+			type="button"
+			data-te-ripple-init
+			data-te-submit-btn-ref
+			data-te-ripple-color="light"
+			class="flex rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mr-1 h-4 w-4">
+				<path
+					fill-rule="evenodd"
+					d="M19.5 21a3 3 0 003-3V9a3 3 0 00-3-3h-5.379a.75.75 0 01-.53-.22L11.47 3.66A2.25 2.25 0 009.879 3H4.5a3 3 0 00-3 3v12a3 3 0 003 3h15zm-6.75-10.5a.75.75 0 00-1.5 0v4.19l-1.72-1.72a.75.75 0 00-1.06 1.06l3 3a.75.75 0 001.06 0l3-3a.75.75 0 10-1.06-1.06l-1.72 1.72V10.5z"
+					clip-rule="evenodd"
+				></path>
+			</svg>
+			Поиск
+		</button>
+	</div>
+</form>
+    </div>
+<div id="full-screen-example"></div>
+<div id="myGrid" class="ag-theme-alpine-dark m-12 mt-4" style="height:80vh"></div>
+{% endblock %}
+{% block script %}
+<script src="{% static 'ag-grid-community/dist/ag-grid-community.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'ag-grid-enterprise/dist/ag-grid-enterprise.min.js' %}" type="text/javascript"></script>
+<script>
+    let gridApi;
+    function expandAll() {
+  gridApi.expandAll();
+}
+    function collapseAll() {
+      gridApi.collapseAll();
+    }
+    function onFilterTextBoxChanged() {
+    gridApi.setGridOption(
+        'quickFilterText',
+        document.getElementById('filter-text-box1').value
+    )}
+    async function get_table () {
+        const first_date = document.getElementById('first_date').value
+        const second_date = document.getElementById('second_date').value
+        const myGridElement = document.querySelector('#myGrid');
+        myGridElement.innerHTML = ``
+        const data = (await fetch(`/api/v1/foo/?first_date=${first_date}&second_date=${second_date}`, {method: 'POST'})).json()
+        data.then( (result) => {
+            console.log(result)
+            const gridOptions = {
+                suppressAggFuncInHeader: true,
+                groupDefaultExpanded: 1,
+                sideBar: true,
+                pivotMode: true,
+                pivotPanelShow: 'always',
+                defaultColDef: {
+                    flex: 1,
+                    autoHeaderHeight: true,
+                    wrapHeaderText: true,
+                    enablePivot: true,
+                    enableRowGroup: true,
+
+                },
+                autoGroupColumnDef: {
+                    headerName: 'Медицинская организация ── Подразделение ── Врач',
+                    minWidth: 550,
+                    tooltipValueGetter: (params) => params.value,
+                    sort: 'asc'
+
+                },
+                rowGroupPanelShow: 'always',
+                rowData: result.data,
+                columnDefs: [
+                    {
+                        field: 'lpu',
+                        headerName: 'ЛПУ',
+                        filter: true,
+                        enableRowGroup: true,
+                        rowGroup: true, hide: true,
+                        tooltipValueGetter: (params) => params.value,
+                    },
+                    {
+                        field: 'dep',
+                        filter: true,
+                        enableRowGroup: true,
+                        rowGroup: true, hide: true,
+                        headerName: 'Подразделение',
+                        tooltipValueGetter: (params) => params.value,
+                    },
+                    {
+                        field: 'empl',
+                        filter: true,
+                        rowGroup: true, hide: true,
+                        headerName: 'Врач (специальность)',
+                    },
+                    {
+                        field: 'cab',
+                        filter: true,
+                        hide: true,
+                        headerName: 'Кабинет',
+                    },
+                    {
+                        field: "sum_vs",
+                        headerName: 'Всего слотов',
+                        suppressHeaderMenuButton: true,
+                        aggFunc: 'sum',
+                        width: 100,
+                    },
+                    {
+                        field: "sum_vk",
+                        headerName: 'Всего конкурентных',
+                        suppressHeaderMenuButton: true,
+                        aggFunc: 'sum',
+                        width: 100,
+                    },
+                    {
+                        field: "date",
+                        headerName: 'Дата',
+                        suppressMovable: true,
+                        suppressHeaderMenuButton: true,
+                        width: 100,
+                    },
+                ]
+            }
+            gridApi = agGrid.createGrid(myGridElement, gridOptions);
+                })
+    }
+</script>
+<script>
+	const btnfull = document.getElementById("btn-full-screen");
+            const loaderFull = `
+	      <div id="loading-full">
+	        <div
+	          data-te-loading-icon-ref
+	          class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
+	          role="status"></div>
+	        <span data-te-loading-text-ref>Загрузка...</span>
+	      </div>
+	    `
+        const test2 = document.getElementById("full-screen-example");
+</script>
+<script>
+	async function loader () {
+        test2.insertAdjacentHTML("beforeend", loaderFull);
+        const loadingFull = document.getElementById("loading-full");
+            const loading = new te.LoadingManagement(loadingFull, {
+                scroll: false,
+                backdropID: "full-backdrop",
+            });
+        await Promise.all([await get_table()]);
+        loading.dispose();
+	}
+    btnfull.addEventListener("click", loader, false)
+    document.addEventListener("DOMContentLoaded", loader , false);
+</script>
+{% endblock %}

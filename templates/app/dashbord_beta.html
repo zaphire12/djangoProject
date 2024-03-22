@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block body %}
+{% include 'widgets/search_bar.html' %}
+<div id="full-screen-example"></div>
+<div id="myGrid" class="ag-theme-alpine-dark m-12 mt-4" style="height:65vh"></div>
+{% endblock %}
+{% block script %}
+<script src="{% static 'ag-grid-community/dist/ag-grid-community.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'ag-grid-enterprise/dist/ag-grid-enterprise.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/formulas.js' %}" ></script>
+<script src="{% static 'js/searchBar.js' %}" ></script>
+<script src="{% static 'js/loading_management.js' %}" ></script>
+<script>
+    const pathname = window.location.pathname.replaceAll('/', "");
+    const first_date_l = document.getElementById('first_date')
+    const second_date_l = document.getElementById('second_date')
+    if (localStorage.getItem(pathname + '.' + first_date_l.id) && localStorage.getItem(pathname + '.' + second_date_l.id)) {
+        first_date_l.value = localStorage.getItem(pathname + '.' + first_date_l.id)
+        second_date_l.value = localStorage.getItem(pathname + '.' + second_date_l.id)
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", main, false);
+    btnfull.addEventListener("click", loader_dashboard, false)
+</script>
+{% endblock %}
