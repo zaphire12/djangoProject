@@ -1,11 +1,9 @@
 import json
 from datetime import datetime
-from project.celery import app
 
 from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Concat
 from django.db import models
-from django.forms import model_to_dict
 from django.db.models.functions import Cast, Floor
 from django.http import JsonResponse, HttpResponse, Http404
 from django.conf import settings
@@ -13,9 +11,7 @@ from django.conf import settings
 from app.context_processor import get_user_permissions
 from app.models import MainDocumentData, Modules, SlotReport
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Case, When, CharField, Value as V, Q, Sum, F, IntegerField
-
-from .tasks import foo
+from django.db.models import Case, When, TextField, Value as V, Q, Sum, F, IntegerField
 from basic_auth.models import Lpu
 
 
@@ -49,19 +45,6 @@ def filter_helper(request):
         filters &= Q(doc_type__in=doc_post)
     filters &= Q(doc_type__in=settings.DOC_TYPE_LIST)
     return filters
-
-
-@csrf_exempt
-def celery(request):
-    task = foo.delay()
-    return JsonResponse({'ji': task.id})
-
-
-@csrf_exempt
-def celery_queue(request):
-    queue_celery = app.control.inspect().active()
-    queue_list = queue_celery.get('celery@localhost')
-    return JsonResponse({'tasks': queue_celery})
 
 
 @csrf_exempt
@@ -183,8 +166,11 @@ def data_set_designer(request):
     filters = filter_helper(request)
     result = (
         MainDocumentData.objects
-        .values(d=F('lpu_dep'), e=F('employer'), t=F('doc_type'), l=F('lpu'), dp=F('date_provide'))
+        .values(d=F('lpu_dep'),  t=F('doc_type'), l=F('lpu'), dp=F('date_provide'))
         .annotate(
+            e=Case(
+                When(position__isnull=False, then=Concat('employer', V(" ( "), 'position', V(" )"))),
+                default='employer', output_field=TextField()),
             x=Sum(
                 Cast(Floor('semd_formed'), output_field=IntegerField())
             ),
@@ -204,7 +190,7 @@ def data_set_designer(request):
 
 
 @csrf_exempt
-def foo(request):
+def data_set_slots(request):
     first_date = request.GET.get('first_date')
     second_date = request.GET.get('second_date')
     first_date = datetime.strptime(first_date, '%d/%m/%Y').date()
@@ -216,7 +202,7 @@ def foo(request):
             'dep',
             'cab',
             'date',
-            empl=Concat('emp', V(" ("), 'spec', V(' )'), output_field=CharField()),
+            empl=Concat('emp', V(" ("), 'spec', V(' )'), output_field=TextField()),
 
         )
         .annotate(

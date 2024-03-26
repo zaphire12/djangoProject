@@ -6,7 +6,7 @@ from django.http import JsonResponse, FileResponse, HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView
-from .models import MainDocumentData, NotificationModel
+from .models import MainDocumentData, NotificationModel, DataTransfusionInfo
 from .forms import UserChangeFormCustom
 from basic_auth.models import User, Lpu
 
@@ -91,29 +91,36 @@ class VerificationChangeView(LoginRequiredMixin, PermissionRequiredMixin, Templa
 
 class TemplateViewLpu(TemplateView):
     def get_context_data(self, **kwargs):
+        if self.extra_context is not None:
+            kwargs.update(self.extra_context)
         kwargs.setdefault("view", self)
         user = self.request.user
         self.extra_context['first_date'] = (datetime.date.today() - datetime.timedelta(days=7)).strftime('%d/%m/%Y')
         self.extra_context['second_date'] = (datetime.date.today()).strftime('%d/%m/%Y')
         self.extra_context['available_lpu'] = (list(Lpu.objects.all()) if user.is_superuser
                                                else list(user.available_lpu.all()))
-        if self.extra_context is not None:
-            kwargs.update(self.extra_context)
+        label = self.extra_context.get('label')
+        self.extra_context['info'] = (DataTransfusionInfo.objects.filter(table_name=label).first())
         return kwargs
 
 
 class MainDocumentView(LoginRequiredMixin, PermissionRequiredMixin, TemplateViewLpu):
+    model = MainDocumentData
     permission_required = ["app.dashboard"]
     permission_denied_message = 'У вас нет доступа'
     template_name = 'app/dashbord_beta.html'
-    extra_context = {'title': 'Отчет по СЭМД', 'grid_filter': True}
+    extra_context = {
+        'title': 'Отчет по СЭМД',
+        'grid_filter': True,
+        'label': MainDocumentData._meta.label
+    }
 
 
 class Designer(LoginRequiredMixin, PermissionRequiredMixin, TemplateViewLpu):
     permission_required = ["app.dashboard"]
     permission_denied_message = 'У вас нет доступа'
     template_name = 'app/designer.html'
-    extra_context = {'title': 'Конструктор'}
+    extra_context = {'title': 'Конструктор', 'info': 'Тут будет информация об актуальности данных'}
 
 
 class Charts(LoginRequiredMixin, PermissionRequiredMixin, TemplateViewLpu):

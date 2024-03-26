@@ -13,8 +13,6 @@ urlpatterns = [
     path('_data_set_dashboard/', gzip_page(views.data_set_dashboard), name='data_set_dashboard'),
     path('_lpu_dep_list/', views.lpu_dep, name='doc_type'),
     path('_emp_list/', views.emp_list, name='emp_list'),
-    path('_data_set_designer/', gzip_page(views.data_set_designer), name='foo'),
-    path('celery/', views.celery, name='celery'),
-    path('celery_queue/', views.celery_queue, name='celery_queue'),
-    path('foo/', gzip_page(views.foo), name='foo')
+    path('_data_set_designer/', gzip_page(views.data_set_designer), name='data_set_designer'),
+    path('data_set_slots/', gzip_page(views.data_set_slots), name='data_set_slots')
 ]

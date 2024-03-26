@@ -33,11 +33,11 @@ class Modules(models.Model):
 
 class MainDocumentData(models.Model):
     lpu = models.ForeignKey(Lpu, on_delete=models.PROTECT, db_index=True)
-    lpu_dep = models.CharField(max_length=255, db_index=True)
-    dep_oid = models.CharField(max_length=255)
-    doc_type = models.CharField(max_length=255, db_index=True)
-    employer = models.CharField(max_length=255, db_index=True)
-    position = models.CharField(max_length=255)
+    lpu_dep = models.TextField(db_index=True, blank=True, null=True)
+    dep_oid = models.TextField(blank=True, null=True)
+    doc_type = models.TextField(db_index=True, blank=True, null=True)
+    employer = models.TextField(db_index=True)
+    position = models.TextField(blank=True, null=True)
     date_provide = models.DateField(verbose_name='Дата оказания услуги', db_index=True)
     services_success = models.IntegerField(verbose_name='Оказано услуг')
     services_not_send = models.IntegerField()
@@ -77,11 +77,11 @@ class NotificationModel(models.Model):
 
 
 class SlotReport(models.Model):
-    lpu = models.CharField(max_length=255)
-    dep = models.CharField(max_length=255)
-    cab = models.CharField(max_length=255)
-    spec = models.CharField(max_length=255)
-    emp = models.CharField(max_length=255)
+    lpu = models.TextField(db_index=True, blank=True, null=True)
+    dep = models.TextField(db_index=True, blank=True, null=True)
+    cab = models.TextField(db_index=True, blank=True, null=True)
+    spec = models.TextField(db_index=True, blank=True, null=True)
+    emp = models.TextField(db_index=True, blank=True, null=True)
     date = models.DateField()
     vsego_slotov = models.IntegerField()
     vsego_konkyr = models.IntegerField()
@@ -93,6 +93,14 @@ class SlotReport(models.Model):
     class Meta:
         db_table_comment = "Основная информация по слотам"
         verbose_name = "Отчет по слотам"
+
+
+class DataTransfusionInfo(models.Model):
+    table_name = models.CharField(max_length=56)
+    date_begin = models.DateTimeField(blank=True, null=True)
+    date_end = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
 
 # @receiver(pre_save, sender=NotificationModel)
 # def checker(sender, instance, **kwargs):

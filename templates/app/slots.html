@@ -115,7 +115,7 @@
         const second_date = document.getElementById('second_date').value
         const myGridElement = document.querySelector('#myGrid');
         myGridElement.innerHTML = ``
-        const data = (await fetch(`/api/v1/foo/?first_date=${first_date}&second_date=${second_date}`, {method: 'POST'})).json()
+        const data = (await fetch(`/api/v1/data_set_slots/?first_date=${first_date}&second_date=${second_date}`, {method: 'POST'})).json()
         data.then( (result) => {
             console.log(result)
             const gridOptions = {

@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     'api_v2',
     'basic_auth',
     'app',
-    'django_celery_results'
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
