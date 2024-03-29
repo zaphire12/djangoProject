@@ -28,11 +28,11 @@ class OracleExecutor:
         except Exception as e:
             raise Exception(f"Ошибка подключения к Oracle: {e}")
 
-    def get_month_report(self, date_begin, date_end):
+    def get_main_report(self, date_begin, date_end):
         with self.Session() as session:
             if self.check_connection():
-                date_begin = datetime.strptime(date_begin, '%Y-%m-%d').strftime('%d.%m.%Y')
-                date_end = datetime.strptime(date_end, '%Y-%m-%d').strftime('%d.%m.%Y')
+                date_begin = date_begin.strftime('%d.%m.%Y')
+                date_end = date_end.strftime('%d.%m.%Y')
                 session.execute(settings.set_nls_date_format)
                 df = pd.read_sql(
                     settings.month_report,
@@ -43,40 +43,38 @@ class OracleExecutor:
                     },
                 )
                 df.columns = settings.month_report_col
-                df.to_excel('test.xlsx')
                 return df
 
-    # def get_slot_report(self):
-    #     with self.Session() as session:
-    #         session.execute(settings.set_nls_date_format)
-    #         date_params = settings.date_sql.get_slot_date()
-    #         params = {
-    #             'db': date_params.get('first_day'),
-    #             'de': date_params.get('last_day'),
-    #         }
-    #         df = pd.read_sql(
-    #             settings.slot_report,
-    #             session.connection(),
-    #             params=params
-    #         )
-    #         col = [
-    #             "lpu",
-    #             "dep",
-    #             "cab",
-    #             "spec",
-    #             "emp",
-    #             "date",
-    #             "vsego_slotov",
-    #             "vsego_konkyr",
-    #             "vsego_internet",
-    #             "vsego_call_center",
-    #             "kol_vo",
-    #             'kol_vo_14',
-    #             "kol_vo_zap_otkaz"
-    #         ]
-    #         df.columns = col
-    #         PostgresqlExecutor().df_to_sql_slot_report(df)
-    #         return params
+    def get_slot_report(self):
+        with self.Session() as session:
+            session.execute(settings.set_nls_date_format)
+            date_params = settings.date_sql.get_slot_date()
+            params = {
+                'db': date_params.get('first_day'),
+                'de': date_params.get('last_day'),
+            }
+            df = pd.read_sql(
+                settings.slot_report,
+                session.connection(),
+                params=params
+            )
+            col = [
+                "lpu",
+                "dep",
+                "cab",
+                "spec",
+                "emp",
+                "date",
+                "vsego_slotov",
+                "vsego_konkyr",
+                "vsego_internet",
+                "vsego_call_center",
+                "kol_vo",
+                'kol_vo_14',
+                "kol_vo_zap_otkaz"
+            ]
+            df.columns = col
+            return df
     #
     # def get_year_report(self):
     #     with self.Session() as session:

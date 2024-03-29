@@ -3803,3 +3803,4 @@
 /db.sqlite3
 /cert/jwt-private.pem
 /cert/jwt-public.pem
+/staticfiles/

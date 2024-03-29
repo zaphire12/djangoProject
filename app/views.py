@@ -16,7 +16,8 @@ class IndexView(LoginRequiredMixin, TemplateView):
     extra_context = {'title': 'Главная страница'}
 
 
-class UserNotificationView(LoginRequiredMixin, ListView):
+class UserNotificationView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = ["app.view_notificationmodel"]
     template_name = 'app/notifications.html'
     extra_context = {'title': 'Уведомления'}
     paginate_by = 4
@@ -95,17 +96,29 @@ class TemplateViewLpu(TemplateView):
             kwargs.update(self.extra_context)
         kwargs.setdefault("view", self)
         user = self.request.user
-        self.extra_context['first_date'] = (datetime.date.today() - datetime.timedelta(days=7)).strftime('%d/%m/%Y')
-        self.extra_context['second_date'] = (datetime.date.today()).strftime('%d/%m/%Y')
-        self.extra_context['available_lpu'] = (list(Lpu.objects.all()) if user.is_superuser
-                                               else list(user.available_lpu.all()))
-        label = self.extra_context.get('label')
-        self.extra_context['info'] = (DataTransfusionInfo.objects.filter(table_name=label).first())
+        label = kwargs.get('label')
+        extra_context = {
+            'first_date': (datetime.date.today() - datetime.timedelta(days=7)).strftime('%d/%m/%Y'),
+            'second_date': (datetime.date.today()).strftime('%d/%m/%Y'),
+            'available_lpu': (list(Lpu.objects.all()) if user.is_superuser else list(user.available_lpu.all())),
+            'info': DataTransfusionInfo.objects.filter(table_name=label).first()
+        }
+        kwargs.update(extra_context)
         return kwargs
 
 
+class MonthReport(LoginRequiredMixin, PermissionRequiredMixin, TemplateViewLpu):
+    permission_required = ["app.dashboard"]
+    permission_denied_message = 'У вас нет доступа'
+    template_name = 'app/month_report.html'
+    extra_context = {
+        'title': 'Отчет за месяц',
+        'grid_filter': True,
+        'label': MainDocumentData._meta.label
+    }
+
+
 class MainDocumentView(LoginRequiredMixin, PermissionRequiredMixin, TemplateViewLpu):
-    model = MainDocumentData
     permission_required = ["app.dashboard"]
     permission_denied_message = 'У вас нет доступа'
     template_name = 'app/dashbord_beta.html'

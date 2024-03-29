@@ -1,10 +1,9 @@
 from django import forms
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model, authenticate, password_validation
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm, PasswordResetForm, \
     SetPasswordForm
 from django.core.exceptions import ValidationError
-from .models import User, Lpu
-from django.contrib.admin import widgets
+from django.utils.translation import gettext as _
 
 
 class PasswordResetFormCustom(PasswordResetForm):
@@ -17,6 +16,25 @@ class PasswordResetFormCustom(PasswordResetForm):
 
 
 class SetPasswordFormCustom(SetPasswordForm):
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={
+            "autocomplete": "new-password",
+            'class': 'peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:bg-neutral-700 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0'
+        }),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    new_password2 = forms.CharField(
+        label=_("New password confirmation"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            "autocomplete": "new-password",
+            'class': 'peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:bg-neutral-700 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0'
+
+        }),
+    )
+
     def save(self, commit=True):
         password = self.cleaned_data["new_password1"]
         self.user.set_password(password)

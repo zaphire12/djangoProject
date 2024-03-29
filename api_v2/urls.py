@@ -6,5 +6,5 @@ from . import views
 app_name = 'api_v2'
 
 urlpatterns = [
-    # path('foo/', gzip_page(views.foo), name='foo')
+    path('foo/', gzip_page(views.foo), name='foo')
 ]

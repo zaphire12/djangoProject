@@ -13,5 +13,6 @@ urlpatterns = [
     path('designer/', views.Designer.as_view(), name='designer'),
     path('chart/', views.Charts.as_view(), name='chart'),
     path('tasks/', views.Tasks.as_view(), name='tasks'),
-    path('slots/', views.SlotsReport.as_view(), name='slots')
+    path('slots/', views.SlotsReport.as_view(), name='slots'),
+    path('month_report/', views.MonthReport.as_view(), name='month_report')
 ]

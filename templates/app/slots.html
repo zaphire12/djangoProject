@@ -117,7 +117,6 @@
         myGridElement.innerHTML = ``
         const data = (await fetch(`/api/v1/data_set_slots/?first_date=${first_date}&second_date=${second_date}`, {method: 'POST'})).json()
         data.then( (result) => {
-            console.log(result)
             const gridOptions = {
                 suppressAggFuncInHeader: true,
                 groupDefaultExpanded: 1,
@@ -176,6 +175,7 @@
                         suppressHeaderMenuButton: true,
                         aggFunc: 'sum',
                         width: 100,
+                        enableValue: true
                     },
                     {
                         field: "sum_vk",
@@ -183,6 +183,17 @@
                         suppressHeaderMenuButton: true,
                         aggFunc: 'sum',
                         width: 100,
+                        enableValue: true
+
+                    },
+					{
+                        field: 'sum_14',
+                        headerName: 'Кол-во записей 14 спец.',
+						suppressMovable: true,
+                        suppressHeaderMenuButton: true,
+                        hide: true,
+						aggFunc: 'sum',
+                        enableValue: true
                     },
                     {
                         field: "date",

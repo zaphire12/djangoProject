@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env()
+
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
@@ -18,7 +19,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dash.infomed39.ru', '127.0.0.1']
 
 
 # Application definition
@@ -64,8 +65,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'basic_auth.context_processors.params_processor',
                 # 'basic_auth.context_processors.celery_uri_processor',
+                'app.context_processor.available_modules',
                 'app.context_processor.notification_len_processor',
-                'app.context_processor.available_modules'
             ],
         },
     },
@@ -113,23 +114,23 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kaliningrad'
 
 USE_I18N = True
 
-USE_TZ = True
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "node_modules",
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -192,6 +193,7 @@ IGNORE_LPU = [
 CELERY_TASK_TRACK_STARTED = True
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # ORACLE
 ORACLE_DB = env('ORACLE_DB')

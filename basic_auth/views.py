@@ -31,14 +31,14 @@ class PasswordResetViewCustom(PasswordResetView):
     email_template_name = "basic_auth/password_reset_email.html"
     template_name = "basic_auth/password_reset_form.html"
     form_class = PasswordResetFormCustom
-    extra_context = {'title': 'Востановление пароля', 'button_label': 'Востановить'}
+    extra_context = {'title': 'Восстановление пароля', 'button_label': 'Восстановить'}
     success_url = reverse_lazy("basic_auth:password_reset_done")
 
 
 class PasswordResetConfirmViewCustom(PasswordResetConfirmView):
     form_class = SetPasswordFormCustom
     template_name = "basic_auth/password_reset_confirm.html"
-    extra_context = {'title': 'Востановление пароля', 'button_label': 'Востановить'}
+    extra_context = {'title': 'Восстановление пароля', 'button_label': 'Восстановить'}
     success_url = reverse_lazy("basic_auth:password_reset_complete")
 
 

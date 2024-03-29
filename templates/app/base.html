@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Добро пожаловать!">
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/_favicon.ico' %}"/>
     <title>{{ title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{% static 'css/roboto.css' %}" rel="stylesheet">
@@ -186,7 +187,7 @@
                 <span class="px-6 py-4 text-[0.6rem] font-bold uppercase text-gray-600 dark:text-gray-400">{{ tag }}</span>
             </li>
             {% for module_dict in modules %}
-                {% if modules.module.name == 'Уведомления' %}
+                {% if module_dict.module.name == 'Уведомления' %}
                     <li class="relative">
                         <a
                             href="{{ module_dict.module.url }}"

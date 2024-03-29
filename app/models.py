@@ -53,6 +53,28 @@ class MainDocumentData(models.Model):
         verbose_name = "Основная информация по СЭМД"
 
 
+class MainDocumentDataMonth(models.Model):
+    lpu = models.ForeignKey(Lpu, on_delete=models.CASCADE, db_index=True)
+    lpu_dep = models.TextField(db_index=True, blank=True, null=True)
+    dep_oid = models.TextField(blank=True, null=True)
+    doc_type = models.TextField(db_index=True, blank=True, null=True)
+    employer = models.TextField(db_index=True)
+    position = models.TextField(blank=True, null=True)
+    date_provide = models.DateField(verbose_name='Дата оказания услуги', db_index=True)
+    services_success = models.IntegerField(verbose_name='Оказано услуг')
+    services_not_send = models.IntegerField()
+    services_error = models.IntegerField()
+    services_send = models.IntegerField()
+    semd_reg = models.IntegerField()
+    semd_formed = models.IntegerField()
+    semd_success_reg = models.IntegerField()
+    semd_success_summ = models.IntegerField()
+
+    class Meta:
+        db_table_comment = "Основная информация по СЭМД за прошлый месяц"
+        verbose_name = "Основная информация по СЭМД за прошлый месяц"
+
+
 class NotificationCategory(models.Model):
     title = models.CharField(max_length=255)
 
@@ -88,7 +110,8 @@ class SlotReport(models.Model):
     vsego_internet = models.IntegerField()
     vsego_call_center = models.IntegerField()
     kol_vo = models.IntegerField()
-    kol_vo_zap_otkaz = models.IntegerField()
+    kol_vo_14 = models.IntegerField(blank=True, null=True,)
+    kol_vo_zap_otkaz = models.IntegerField(blank=True, null=True,)
 
     class Meta:
         db_table_comment = "Основная информация по слотам"
@@ -97,8 +120,8 @@ class SlotReport(models.Model):
 
 class DataTransfusionInfo(models.Model):
     table_name = models.CharField(max_length=56)
-    date_begin = models.DateTimeField(blank=True, null=True)
-    date_end = models.DateTimeField(blank=True, null=True)
+    date_begin = models.DateField(blank=True, null=True)
+    date_end = models.DateField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
 
 

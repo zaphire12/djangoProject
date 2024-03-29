@@ -12,6 +12,8 @@ app = Celery('project')
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
+app.conf.timezone = 'Europe/Kaliningrad'
+
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 

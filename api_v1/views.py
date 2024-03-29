@@ -222,6 +222,22 @@ def data_set_slots(request):
                     output_field=IntegerField()
                 )
             ),
+            sum_14=Sum(
+                Cast(
+                    Floor(
+                        'kol_vo_14'
+                    ),
+                    output_field=IntegerField()
+                )
+            ),
+            sum_otk=Sum(
+                Cast(
+                    Floor(
+                        'kol_vo_zap_otkaz'
+                    ),
+                    output_field=IntegerField()
+                )
+            ),
         ).filter(date__range=[first_date, second_date])
     )
     return JsonResponse({'data': list(result)})
